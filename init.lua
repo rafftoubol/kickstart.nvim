@@ -89,7 +89,8 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
-
+vim.opt.number = true
+vim.opt.relativenumber = true
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 vim.opt.wrap = true
@@ -246,7 +247,57 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  {
+    'neovim/nvim-lspconfig',
+  },
+  {
+    'nvim-telescope/telescope.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    keys = {
+      {
+        '<leader>ff',
+        function()
+          require('telescope.builtin').find_files()
+        end,
+        desc = 'Telescope find files',
+      },
+      {
+        '<leader>fg',
+        function()
+          require('telescope.builtin').live_grep()
+        end,
+        desc = 'Telescope live grep',
+      },
+      {
+        '<leader>fb',
+        function()
+          require('telescope.builtin').buffers()
+        end,
+        desc = 'Telescope buffers',
+      },
+    },
+    config = function()
+      require('telescope').setup {}
+    end,
+  },
 
+  {
+    'romgrk/barbar.nvim',
+    dependencies = {
+      'lewis6991/gitsigns.nvim',
+      'nvim-tree/nvim-web-devicons',
+    },
+    init = function()
+      vim.g.barbar_auto_setup = false
+    end,
+    opts = {},
+    config = function(_, opts)
+      require('barbar').setup(opts)
+      vim.keymap.set('n', '<leader>bn', '<Cmd>BufferNext<CR>', { silent = true, desc = 'Next buffer' })
+      vim.keymap.set('n', '<leader>bp', '<Cmd>BufferPrevious<CR>', { silent = true, desc = 'Previous buffer' })
+      vim.keymap.set('n', '<leader>bc', '<Cmd>BufferClose<CR>', { silent = true, desc = 'Close buffer' })
+    end,
+  },
   {
     'supermaven-inc/supermaven-nvim',
     config = function()
@@ -956,6 +1007,7 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'master',
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
