@@ -248,39 +248,16 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   {
-    'neovim/nvim-lspconfig',
-  },
-  {
-    'nvim-telescope/telescope.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    keys = {
-      {
-        '<leader>ff',
-        function()
-          require('telescope.builtin').find_files()
-        end,
-        desc = 'Telescope find files',
-      },
-      {
-        '<leader>fg',
-        function()
-          require('telescope.builtin').live_grep()
-        end,
-        desc = 'Telescope live grep',
-      },
-      {
-        '<leader>fb',
-        function()
-          require('telescope.builtin').buffers()
-        end,
-        desc = 'Telescope buffers',
-      },
+    'MeanderingProgrammer/render-markdown.nvim',
+    dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
+    -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+    ---@module 'render-markdown'
+    ---@type render.md.UserConfig
+    opts = {
+      render_modes = true,
     },
-    config = function()
-      require('telescope').setup {}
-    end,
   },
-
   {
     'romgrk/barbar.nvim',
     dependencies = {
@@ -1007,23 +984,31 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
-    branch = 'master',
+    branch = 'main',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-      -- Autoinstall languages that are not installed
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
+    config = function()
+      -- Ensure core parsers are installed
+      require('nvim-treesitter').install {
+        'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+      }
+      vim.api.nvim_create_autocmd('FileType', {
+        callback = function(args)
+          local ft = vim.bo[args.buf].filetype
+          -- Auto-install parser for the current filetype
+          local lang = vim.treesitter.language.get_lang(ft)
+          if lang then
+            pcall(require('nvim-treesitter').install, { lang })
+          end
+          -- Enable treesitter highlighting (provided by Neovim in 0.12+)
+          pcall(vim.treesitter.start, args.buf)
+          -- Enable treesitter indentation (ruby uses vim's regex instead)
+          if ft ~= 'ruby' then
+            vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+          end
+        end,
+      })
+    end,
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
     --
