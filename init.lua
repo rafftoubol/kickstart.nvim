@@ -94,6 +94,8 @@ vim.opt.relativenumber = true
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 vim.opt.wrap = true
+vim.opt.linebreak = true
+vim.opt.breakindent = true
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
@@ -169,7 +171,6 @@ vim.o.confirm = true
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
-
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -247,6 +248,25 @@ rtp:prepend(lazypath)
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+  {
+    'nvim-neo-tree/neo-tree.nvim',
+    branch = 'v3.x',
+    dependencies = {
+      'nvim-lua/plenary.nvim',
+      'MunifTanjim/nui.nvim',
+      'nvim-tree/nvim-web-devicons', -- optional, but recommended
+    },
+    keys = {
+      { '<leader>l', '<cmd>Neotree toggle<cr>', desc = 'Toggle Neo-tree' },
+    },
+    lazy = false, -- neo-tree will lazily load itself
+    opts = {
+      enable_git_status = true,
+      window = {
+        position = 'right',
+      },
+    },
+  },
   {
     'MeanderingProgrammer/render-markdown.nvim',
     dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
@@ -332,12 +352,6 @@ require('lazy').setup({
   --
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
-  {
-    'andrewferrier/wrapping.nvim',
-    config = function()
-      require('wrapping').setup()
-    end,
-  },
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
@@ -990,7 +1004,17 @@ require('lazy').setup({
     config = function()
       -- Ensure core parsers are installed
       require('nvim-treesitter').install {
-        'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc',
+        'bash',
+        'c',
+        'diff',
+        'html',
+        'lua',
+        'luadoc',
+        'markdown',
+        'markdown_inline',
+        'query',
+        'vim',
+        'vimdoc',
       }
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
