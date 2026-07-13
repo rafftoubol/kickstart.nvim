@@ -1,0 +1,77 @@
+# Get editor completions based on the config schema
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """
+[╭─ ](#73dacb)[](#73dacb)$time[  ](bg:#1a1b26 fg:#73dacb)[](bg:#1a1b26 fg:#ff9e64)$directory[](bg:#1a1b26 fg:#ff9e64)[  ](fg:#bb9af7 bg:#1a1b26)$git_branch$git_status[](fg:#bb9af7 bg:#1a1b26)
+[│](fg:#73dacb bg:#1a1b26)
+[╰─$python$golang$terraform$aws   ](fg:#73dacb bg:#1a1b26)
+"""
+
+# ~/.config/starship.toml
+
+[aws]
+format = '[$symbol($profile)(\($region\))(\[$duration\])]($style)'
+style = 'bold orange'
+symbol = ' 󰖐 '
+[aws.region_aliases]
+ap-southeast-2 = 'au'
+us-east-1 = 'va'
+[aws.profile_aliases]
+
+
+#New comment
+[time]
+disabled = false
+format = '[   $time ]($style)'
+time_format = '%H:%M'
+style = 'bg:#73dacb fg:bold #1a1b26'
+
+# Replace the '❯' symbol in the prompt with '➜'
+[character] # The name of the module we are configuring is 'character'
+success_symbol = '[➜](green)' # The 'success_symbol' segment is being set to '➜' with the color 'bold green'
+
+
+# ~/.config/starship.toml
+[terraform]
+format = '[$symbol$workspace ]($style)'
+symbol = ' 󱁢 '
+
+
+[python]
+format = '[$symbol$virtualenv]($style)'
+symbol = '  '
+# Follow symlinks on the path and show the full path
+[golang]
+format = '[ $symbol $version ]($style)'
+symbol = ''
+# Show the full path in the prompt
+[directory]
+truncation_length = 3
+truncation_symbol = '…/'
+format = '[   $path ]($style)'
+style = 'bg:#ff9e64 fg:bold #1a1b26'
+
+# Show the username and hostname in the prompt
+[username]
+show_always = true
+disabled = false
+style_user = 'bg:#565f89 fg:bold #24283b'
+style_root = 'bg:#565f89 fg:bold #24283b'
+format = '[   $user ]($style)'
+
+[git_branch]
+format = '[ $branch]($style)'
+style = 'bg:#bb9af7 fg:bold #1a1b26'
+
+[git_status]
+format = '[ $ahead_behind $modified]($style)'
+style = "bg:#bb9af7 fg:bold italic #1a1b26"
+ahead = " ${count} "
+behind = " ${count} "
+diverged = " ${behind_count} ${ahead_count}  "
+modified = " "
+untracked = " untracked  "
+staged = " staged  "
+renamed = " renamed  "
+deleted = " deleted   "
+up_to_date = ""
